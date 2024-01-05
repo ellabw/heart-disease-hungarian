@@ -105,7 +105,7 @@ st.set_page_config(
 
 st.title("Hungarian Heart Disease")
 st.write(f"**_Model's Accuracy_** :  :green[**92**]%")
-st.image('hati.jpg', width=400)
+st.image('hati.jpg', width=600)
 st.write("")
 
 tab1, tab2 = st.tabs(["Single-predict", "Multi-predict"])
