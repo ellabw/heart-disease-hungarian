@@ -7,6 +7,7 @@ import streamlit as st
 import time
 import pickle
 
+# Pemrosesan Data
 with open("data/hungarian.data", encoding='Latin1') as file:
   lines = [line.strip() for line in file]
 
@@ -15,6 +16,7 @@ data = itertools.takewhile(
   (' '.join(lines[i:(i + 10)]).split() for i in range(0, len(lines), 10))
 )
 
+# Membuat DataFrame dan Melakukan Seleksi Fitur
 df = pd.DataFrame.from_records(data)
 
 df = df.iloc[:, :-1]
@@ -25,6 +27,7 @@ df.replace(-9.0, np.NaN, inplace=True)
 
 df_selected = df.iloc[:, [1, 2, 7, 8, 10, 14, 17, 30, 36, 38, 39, 42, 49, 56]]
 
+# Pemetaan Fitur dan Pembersihan
 column_mapping = {
   2: 'age',
   3: 'sex',
@@ -47,6 +50,7 @@ df_selected.rename(columns=column_mapping, inplace=True)
 columns_to_drop = ['ca', 'slope','thal']
 df_selected = df_selected.drop(columns_to_drop, axis=1)
 
+#Imputasi Nilai yang Hilang
 meanTBPS = df_selected['trestbps'].dropna()
 meanChol = df_selected['chol'].dropna()
 meanfbs = df_selected['fbs'].dropna()
@@ -80,14 +84,17 @@ fill_values = {
 df_clean = df_selected.fillna(value=fill_values)
 df_clean.drop_duplicates(inplace=True)
 
+# Penanganan Data yang Tidak Seimbang - Oversampling dengan SMOTE
 X = df_clean.drop("target", axis=1)
 y = df_clean['target']
 
 smote = SMOTE(random_state=42)
 X, y = smote.fit_resample(X, y)
 
+#Memuat Model Pembelajaran Mesin yang Telah dilatih
 model = pickle.load(open("model/xgb_model.pkl", 'rb'))
 
+#Membuat Prediksi pada Data yang Telah Dioversampling
 y_pred = model.predict(X)
 accuracy = accuracy_score(y, y_pred)
 accuracy = round((accuracy * 100), 2)
@@ -98,6 +105,7 @@ df_final['target'] = y
 # ========================================================================================================================================================================================
 
 # STREAMLIT
+#Penyiapan Streamlit dan Antarmuka Pengguna (UI):
 st.set_page_config(
   page_title = "Hungarian Heart Disease",
   page_icon = ":heart:"
@@ -108,8 +116,10 @@ st.write(f"**_Model's Accuracy_** :  :green[**92**]%")
 st.image('hati.jpg', width=600)
 st.write("")
 
+#Tab Streamlit - Single-predict dan Multi-predict
 tab1, tab2 = st.tabs(["Single-predict", "Multi-predict"])
 
+#UI Tab Single-predict
 with tab1:
   st.sidebar.header("**User Input** Sidebar")
   st.markdown(
