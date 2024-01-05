@@ -262,15 +262,6 @@ with tab1:
 with tab2:
   st.header("predict multiple data:")
 
-  st.markdown(
-      """
-      <style>
-      .st-dl { background-color: #FFFF00; }
-      </style>
-      """,
-      unsafe_allow_html=True
-  )
-
   sample_csv = df_final.iloc[:5, :-1].to_csv(index=False).encode('utf-8')
 
   st.write("")
